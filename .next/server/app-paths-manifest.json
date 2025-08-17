@@ -1,7 +1,14 @@
 {
+  "/_not-found/page": "app/_not-found/page.js",
+  "/api/search/route": "app/api/search/route.js",
   "/page": "app/page.js",
+  "/about/page": "app/about/page.js",
+  "/feed/route": "app/feed/route.js",
   "/blog/page": "app/blog/page.js",
-  "/blog/[slug]/page": "app/blog/[slug]/page.js",
   "/notes/page": "app/notes/page.js",
-  "/projects/page": "app/projects/page.js"
+  "/cv/page": "app/cv/page.js",
+  "/projects/page": "app/projects/page.js",
+  "/search/page": "app/search/page.js",
+  "/notes/[slug]/page": "app/notes/[slug]/page.js",
+  "/blog/[slug]/page": "app/blog/[slug]/page.js"
 }
