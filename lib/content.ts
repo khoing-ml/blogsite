@@ -3,9 +3,18 @@ import path from 'path';
 import matter from 'gray-matter';
 import readingTime from 'reading-time';
 import { compileMDX } from 'next-mdx-remote/rsc';
+import { mdxComponents } from '../components/MDXComponents';
 import remarkGfm from 'remark-gfm';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
 import rehypeSlug from 'rehype-slug';
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
+import rehypePrettyCode from 'rehype-pretty-code';
+
+const codeTheme = {
+  light: 'github-light',
+  dark: 'github-dark-dimmed'
+};
 
 const CONTENT_DIR = path.join(process.cwd(), 'content');
 
@@ -68,18 +77,47 @@ export async function getBlogPost(slug: string) {
     try {
       const raw = await fs.readFile(c, 'utf-8');
   const { data, content } = matter(raw, { engines: { yaml: s => require('js-yaml').load(s, { schema: require('js-yaml').DEFAULT_SCHEMA }) } });
+  // extract headings (#, ##, ###) for TOC before MDX compile
+  const headingRegex = /^(#{1,3})\s+(.+)$/gm;
+      const headings: { id: string; text: string; level: number }[] = [];
+      let m;
+      function slugify(str: string) {
+        return str
+          .toLowerCase()
+          .trim()
+          .replace(/[`*_~<>/\\]/g, '')
+          .replace(/[^a-z0-9\s-]/g, '')
+          .replace(/\s+/g, '-')
+          .replace(/-+/g, '-');
+      }
+      while ((m = headingRegex.exec(content)) !== null) {
+  const level = m[1].length; // 1,2,3
+        const text = m[2].replace(/#+$/, '').trim();
+        const id = slugify(text);
+        headings.push({ id, text, level });
+      }
       const { content: mdxContent } = await compileMDX({
         source: content,
+        components: mdxComponents,
         options: {
           parseFrontmatter: false,
           mdxOptions: {
-            remarkPlugins: [remarkGfm],
-            rehypePlugins: [rehypeSlug, [rehypeAutolinkHeadings, { behavior: 'wrap' }]]
+            remarkPlugins: [remarkGfm, remarkMath],
+            rehypePlugins: [
+              rehypeSlug,
+              [rehypeAutolinkHeadings, { behavior: 'wrap' }],
+              rehypeKatex,
+              [rehypePrettyCode, {
+                themes: codeTheme,
+                keepBackground: false,
+                defaultLang: 'text'
+              }]
+            ]
           }
         }
       });
   const dateStr = typeof data.date === 'string' ? data.date : new Date(data.date).toISOString().slice(0,10);
-  const meta: PostMeta = { slug, title: data.title, date: dateStr, tags: data.tags || [], summary: data.summary, readingTime: readingTime(content), ...data };
+      const meta: PostMeta & { headings: { id: string; text: string; level: number }[] } = { slug, title: data.title, date: dateStr, tags: data.tags || [], summary: data.summary, readingTime: readingTime(content), headings, ...data };
       return { meta, content: mdxContent };
     } catch { /* continue */ }
   }

@@ -1,9 +1,10 @@
 import "../styles/globals.css";
 import { ReactNode } from "react";
 import SiteSidebar from "../components/SiteSidebar";
-import { Inter } from "next/font/google";
+import { Inter, Fira_Code } from "next/font/google";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const fira = Fira_Code({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-code" });
 
 export const metadata = {
   title: "My Research Blogsite",
@@ -12,7 +13,7 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning className={inter.variable}>
+  <html lang="en" suppressHydrationWarning className={`${inter.variable} ${fira.variable}`}>
       <body className="font-sans antialiased min-h-screen">
         <SiteSidebar />
         <div className="px-5 md:px-10 py-10 max-w-3xl mx-auto">
