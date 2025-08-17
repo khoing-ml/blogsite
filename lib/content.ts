@@ -108,3 +108,20 @@ export async function listAllContent() {
   ]);
   return { blogPosts, researchLog };
 }
+
+// Simple flat listing for notes (non-nested MDX in content/notes)
+export async function listNotes() {
+  const dir = path.join(CONTENT_DIR, 'notes');
+  try {
+    const files = await fs.readdir(dir);
+    const notes = await Promise.all(files.filter(f => /\.mdx?$/.test(f)).map(async f => {
+      const full = path.join(dir, f);
+      const raw = await fs.readFile(full, 'utf-8');
+      const { data, content } = matter(raw);
+      const slug = f.replace(/\.mdx?$/, '');
+      const dateStr = typeof data.date === 'string' ? data.date : (data.date ? new Date(data.date).toISOString().slice(0,10) : '');
+      return { slug, title: data.title || slug, date: dateStr, summary: data.summary, readingTime: readingTime(content) };
+    }));
+    return notes.sort((a,b) => (a.date < b.date ? 1 : -1));
+  } catch { return []; }
+}

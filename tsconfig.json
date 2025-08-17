@@ -23,6 +23,10 @@
       "react",
       "react-dom"
     ],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./*"]
+    },
     "plugins": [
       {
         "name": "next"

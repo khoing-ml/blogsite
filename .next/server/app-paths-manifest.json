@@ -1,4 +1,8 @@
 {
-  "/page": "app/page.js",
-  "/feed/route": "app/feed/route.js"
+  "/cv/page": "app/cv/page.js",
+  "/projects/page": "app/projects/page.js",
+  "/search/page": "app/search/page.js",
+  "/notes/page": "app/notes/page.js",
+  "/blog/page": "app/blog/page.js",
+  "/page": "app/page.js"
 }
