@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+  "prebuild": "rm -rf app/feed app/api/search || true && node scripts/buildSearchIndex.mjs && node scripts/generateFeeds.mjs",
+  "build": "next build",
+  "export": "next build",
     "start": "next start",
     "lint": "next lint",
     "search:index": "node scripts/buildSearchIndex.cjs"

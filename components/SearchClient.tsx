@@ -13,7 +13,8 @@ export default function SearchClient() {
     let active = true;
     (async () => {
       try {
-        const res = await fetch('/api/search');
+        const base = process.env.NEXT_PUBLIC_BASE_PATH || '';
+        const res = await fetch(`${base}/search-index.json`, { cache: 'no-store' });
         if (!res.ok) throw new Error('Failed');
         const json: Entry[] = await res.json();
         if (active) setData(json);
